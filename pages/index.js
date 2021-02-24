@@ -18,7 +18,7 @@ export default function Home() {
             <h1 className="text-lg font-display">Ryan Quattlebaum</h1>
           </a>
         </header>
-        <main className="flex mt-4 prose prose-lg font-text">
+        <main className="flex mt-4 prose prose-lg sm:ml-16 font-text">
           <p>
             Hi, I'm Ryan! I'm a dad, church production lead, and software
             developer in Holly Springs, NC. I'm just getting this site off the
