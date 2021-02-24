@@ -7,7 +7,7 @@ export default function Home() {
         <title>Ryan Quattlebaum</title>
       </Head>
 
-      <div className="p-4 text-gray-900">
+      <div className="p-4 text-gray-900 md:mt-8 md:ml-8">
         <header className="flex items-center justify-between">
           <a href="/" className="flex items-center space-x-4">
             <img
