@@ -2,10 +2,15 @@ module.exports = {
   purge: ['pages/**/*.js'],
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        display: ['"Rock Salt"', 'sans-serif'],
+        text: ['Inter', 'sans-serif'],
+      },
+    },
   },
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 }
