@@ -10,6 +10,14 @@ let title = Astro.props.title || ""
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title && `${title} • `}Ryan Quattlebaum</title>
   <link rel="stylesheet" href="/style/global.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚧</text></svg>" />
+  <!--
+    Favicon emoji (and uses):
+     - 🚧: Under construction for the 2021 crew
+
+    To use one as the favicon, paste it into the raw SVG above (at the end of
+    the line, go ahead and scroll over).
+    -->
 </head>
 <body>
   <div class="mx-auto max-w-[65ch] flex flex-col min-h-screen text-gray-800">
