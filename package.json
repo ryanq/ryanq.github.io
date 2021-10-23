@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "astro dev",
-    "build": "astro build"
+    "build": "astro build",
+    "preview": "astro preview",
+    "deploy": "./deploy.sh"
   },
   "devDependencies": {
     "@astrojs/renderer-react": "^0.1.5",

@@ -1,40 +1,34 @@
-# Welcome to [Astro](https://astro.build)
+# ryanq.github.io
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+This is the source for building my site, [ryanq.github.io](https://ryanq.github.io).
 
-## 🚀 Project Structure
+## Run Locally
 
-Inside of your Astro project, you'll see the following folders and files:
+Clone the project
 
+```bash
+git clone https://github.com/ryanq/ryanq.github.io
+cd ryanq.github.io
+yarn
+yarn start
 ```
-/
-├── public/
-│   ├── robots.txt
-│   └── favicon.ico
-├── src/
-│   ├── components/
-│   │   └── Tour.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+  
+## Deployment
+
+To deploy this project run
+
+```bash
+yarn deploy
 ```
+  
+## Tech Stack
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+* [Node.js](https://nodejs.org)
+* [Yarn](https://yarnpkg.com)
+* [Astro](https://astro.build)
+* [TailwindCSS](https://tailwindcss.com)
+  
+## License
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command         | Action                                      |
-|:----------------|:--------------------------------------------|
-| `npm install`   | Installs dependencies                       |
-| `npm start`     | Starts local dev server at `localhost:3000` |
-| `npm run build` | Build your production site to `./dist/`     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://github.com/snowpackjs/astro) or jump into our [Discord server](https://astro.build/chat).
+All code is licensed under the [MIT license](https://choosealicense.com/licenses/mit/). Content is
+my own.
