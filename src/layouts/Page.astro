@@ -1,0 +1,23 @@
+---
+import Header from '../components/Header.astro'
+
+let title = Astro.props.title || ""
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{title && `${title} • `}Ryan Quattlebaum</title>
+  <link rel="stylesheet" href={"style/global.css"}>
+</head>
+<body>
+  <div class="mx-auto max-w-[65ch] flex flex-col min-h-screen text-gray-800">
+    <Header />
+
+    <main class="flex-grow m-4">
+      <slot name="content" />
+    </main>
+  </div>
+</body>
+</html>
