@@ -12,17 +12,11 @@ jobs:
       - node/install:
           install-yarn: true
 
-  build:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - node/run:
-          yarn-run: build
-
 workflows:
   build:
     jobs:
       - install
-      - build:
+      - node/run:
+          yarn-run: build
           requires:
             - install
