@@ -1,5 +1,7 @@
 # ryanq.github.io
 
+[![Build status on CircleCI](https://circleci.com/gh/ryanq/ryanq.github.io.svg?style=shield)](https://app.circleci.com/pipelines/github/ryanq/ryanq.github.io)
+
 This is the source for building my site, [ryanq.github.io](https://ryanq.github.io).
 
 ## Run Locally
