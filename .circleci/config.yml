@@ -1,22 +1,15 @@
 version: 2.1
 
 jobs:
-  install:
+  build:
     docker:
       - image: cimg/node:17.0.1
     steps:
       - checkout
       - run: yarn
-  build:
-    docker:
-      - image: cimg/node:17.0.1
-    steps:
       - run: yarn build
 
 workflows:
   build:
     jobs:
-      - install
-      - build:
-          requires:
-            - install
+      - build
