@@ -1,15 +1,28 @@
 version: 2.1
 
+orbs:
+  node: circleci/node@4.7.0
+
 jobs:
-  build:
+  install:
     docker:
-      - image: cimg/node:17.0.1
+      - image: cimg/base:stable
     steps:
       - checkout
-      - run: yarn
-      - run: yarn build
+      - node/install:
+          install-yarn: true
+
+  build:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - node/run:
+          yarn-run: build
 
 workflows:
   build:
     jobs:
-      - build
+      - install
+      - build:
+          requires:
+            - install
