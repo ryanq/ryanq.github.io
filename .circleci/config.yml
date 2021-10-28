@@ -9,7 +9,7 @@ jobs:
       - run: yarn
   build:
     docker:
-      - image: cimg/base:node@17.0.1
+      - image: cimg/node:17.0.1
     steps:
       - run: yarn build
 
