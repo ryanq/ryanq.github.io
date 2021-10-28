@@ -6,8 +6,12 @@ jobs:
       - image: cimg/node:17.0.1
     steps:
       - checkout
-      - run: yarn
-      - run: yarn build
+      - run:
+          name: Install dependencies
+          command: yarn
+      - run:
+          name: Build site
+          command: yarn build
 
 workflows:
   build:
