@@ -23,7 +23,7 @@ jobs:
       - persist_to_workspace:
           root: dist
           paths:
-            - *
+            - "*"
   deploy:
     docker:
       - image: cimg/node:17.0.1
