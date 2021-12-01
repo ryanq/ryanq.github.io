@@ -6,14 +6,65 @@ jobs:
       - image: cimg/node:17.0.1
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - yarn-{{ checksum "yarn.lock" }}
+            - yarn-
       - run:
           name: Install dependencies
           command: yarn
+      - save_cache:
+          paths:
+            - node_modules
+          key: yarn-{{ checksum "yarn.lock" }}
       - run:
           name: Build site
           command: yarn build
+      - persist_to_workspace:
+          root: dist
+          paths:
+            - "*"
+  deploy:
+    docker:
+      - image: cimg/node:17.0.1
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-{{ checksum "yarn.lock" }}
+            - yarn-
+      - run:
+          name: Install dependencies
+          command: yarn
+      - save_cache:
+          paths:
+            - node_modules
+          key: yarn-{{ checksum "yarn.lock" }}
+      - run:
+          name: Configure gh-pages CLI
+          command: |
+            git config user.name $GH_NAME
+            git config user.email $GH_EMAIL
+      - add_ssh_keys:
+          fingerprints:
+            - "64:5e:02:b9:2e:f5:6f:08:0a:45:e3:9c:51:b8:08:25"
+      - attach_workspace:
+          at: dist
+      - run:
+          name: Disable Jekyll builds
+          command: touch dist/.nojekyll
+      - run:
+          name: Deploy to gh-pages
+          command: gh-pages --dotfiles --dist dist 
+      
 
 workflows:
   build:
     jobs:
       - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: main
