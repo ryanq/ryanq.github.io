@@ -55,7 +55,7 @@ jobs:
           command: touch dist/.nojekyll
       - run:
           name: Deploy to gh-pages
-          command: gh-pages --dotfiles --dist dist 
+          command: yarn gh-pages --dotfiles --dist dist 
       
 
 workflows:
