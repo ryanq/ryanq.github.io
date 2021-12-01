@@ -21,7 +21,7 @@ jobs:
           name: Build site
           command: yarn build
       - persist_to_workspace:
-          root: dist
+          path: dist
   deploy:
     docker:
       - image: cimg/node:17.0.1
