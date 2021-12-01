@@ -45,11 +45,17 @@ jobs:
           command: |
             git config user.name $GH_NAME
             git config user.email $GH_EMAIL
+      - add_ssh_keys:
+          fingerprints:
+            - "64:5e:02:b9:2e:f5:6f:08:0a:45:e3:9c:51:b8:08:25"
       - attach_workspace:
           at: dist
       - run:
+          name: Disable Jekyll builds
+          command: touch dist/.nojekyll
+      - run:
           name: Deploy to gh-pages
-          command: gh-pages --dist dist 
+          command: gh-pages --dotfiles --dist dist 
       
 
 workflows:
