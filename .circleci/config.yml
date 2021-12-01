@@ -6,14 +6,56 @@ jobs:
       - image: cimg/node:17.0.1
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - yarn-{{ checksum "yarn.lock" }}
+            - yarn-
       - run:
           name: Install dependencies
           command: yarn
+      - save_cache:
+          paths:
+            - node_modules
+          key: yarn-{{ checksum "yarn.lock" }}
       - run:
           name: Build site
           command: yarn build
+      - persist_to_workspace:
+          root: dist
+  deploy:
+    docker:
+      - image: cimg/node:17.0.1
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-{{ checksum "yarn.lock" }}
+            - yarn-
+      - run:
+          name: Install dependencies
+          command: yarn
+      - save_cache:
+          paths:
+            - node_modules
+          key: yarn-{{ checksum "yarn.lock" }}
+      - run:
+          name: Configure gh-pages CLI
+          command: |
+            git config user.name $GH_NAME
+            git config user.email $GH_EMAIL
+      - attach_workspace:
+          at: dist
+      - run:
+          name: Deploy to gh-pages
+          command: gh-pages --dist dist 
+      
 
 workflows:
   build:
     jobs:
       - build
+      - deploy:
+          requires: build
+          filters:
+            branches:
+              only: main
