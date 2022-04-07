@@ -6,17 +6,9 @@ jobs:
       - image: cimg/node:17.0.1
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - yarn-{{ checksum "yarn.lock" }}
-            - yarn-
       - run:
           name: Install dependencies
           command: yarn
-      - save_cache:
-          paths:
-            - node_modules
-          key: yarn-{{ checksum "yarn.lock" }}
       - run:
           name: Build site
           command: yarn build
@@ -29,17 +21,9 @@ jobs:
       - image: cimg/node:17.0.1
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - yarn-{{ checksum "yarn.lock" }}
-            - yarn-
       - run:
           name: Install dependencies
           command: yarn
-      - save_cache:
-          paths:
-            - node_modules
-          key: yarn-{{ checksum "yarn.lock" }}
       - run:
           name: Configure gh-pages CLI
           command: |
