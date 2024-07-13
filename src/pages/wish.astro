@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/css/inter.css">
 	</head>
 
-	<body>
+	<body class="table-grid">
 
 		<header class="flow">
       <h1 class="pull-out">/wish</h1>
@@ -238,6 +238,28 @@
     display: flex;
     flex-flow: column nowrap;
     gap: var(--space-s);
+  }
+
+  .table-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: var(--space-s);
+    row-gap: var(--space-m);
+
+    header,
+    h1, h2, h3, h4 {
+      grid-column: 1 / -1;
+    }
+
+    table,
+    thead, tbody,
+    tr {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+    }
+
+    tr { row-gap: var(--space-s); }
   }
 
   .pull-out { margin-inline-start: -1ch; }
