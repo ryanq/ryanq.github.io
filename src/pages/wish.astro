@@ -1,0 +1,163 @@
+---
+import { getCollection } from 'astro:content'
+import { marked } from 'marked'
+
+const categories = await getCollection('categories')
+const wish_list = await getCollection('wish_list')
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>/wish</title>
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+	</head>
+
+	<body>
+
+		<header>
+
+      <h1>/wish</h1>
+
+      <p>
+        A collection of things around the internet (and off the internet) that I'd love to own. These are things I'd buy myself. Browse the whole list or jump to one of these categories:
+        {categories.map(({ data: category }) => {
+          const label = category["Contents Name"] || category["Name"]
+          const anchor = category["Anchor"] || label
+
+          return <span class="toc-link"><a href={`#${anchor?.toLowerCase()}`}>{label?.toLowerCase()}</a></span>
+        })}.
+      </p>
+
+    </header>
+
+    <main>
+
+      {categories.map(({ id: category_id, data: category }) => {
+        let header = category["Name"]
+        let items = wish_list.filter(({ data: item }) => item["Category"] && item["Category"][0] === category_id && !item["Parent"])
+        
+        return (
+          <h2>{header}</h2>
+          
+          <ul role="list">
+            {items.map(async ({ id: parent_id, data: item }) => {
+              if (item["Has Children?"] ?? false) {
+                
+                /*
+                 * Nested items: like a type of puzzle with different versions...
+                 */
+
+                let price = item["Price"] ? `$${item["Price"]}` : undefined
+                let text = await marked.parseInline(item["Text"] ?? '')
+                let children = wish_list.filter(({ data: item }) => item["Parent"] && item["Parent"][0] === parent_id)
+
+                return (
+                  <li class="row align-baseline">
+                    {price && <p>{price}</p>}
+                    <details>
+                      <summary set:html={text}></summary>
+
+                      <ul role="list">
+                        {children.map(async ({ data: item }) => {
+                          let owned = item["Own?"] ?? false
+                          let price = item["Price"] ? `$${item["Price"]}` : undefined
+                          let text = await marked.parseInline(item["Text"] ?? '')
+                          
+                          return (
+                            <li class:list={["row", "align-baseline", { owned }]}>
+                              {price && <p>{price}</p>}
+                              <p set:html={text}></p>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </details>
+                  </li>
+                )
+                
+              } else {
+
+                /*
+                 * Single items
+                 */
+
+                let owned = item["Own?"] ?? false
+                let price = item["Price"] ? `$${item["Price"]}` : '?'
+                let text = await marked.parseInline(item["Text"] ?? '')
+                let note = item["Acquisition Note"] ?? ''
+
+                return (
+                  <li class:list={["row", "align-baseline", { owned }]}>
+                    {price && <p>{price}</p>}
+                    <p set:html={text}></p>
+                    {owned && <aside>{note}</aside>}
+                  </li>
+                )
+
+              }
+            })}
+          </ul>
+        )
+      })}
+
+    </main>
+
+    <footer>
+
+      <p>
+        Inspired by <a href="https://taylor.town/wish-manifesto">&ldquo;Make a /wish page&rdquo; at taylor.town</a>, where Taylor talks about all the reasons he made one and how to go about it.
+      </p>
+
+    </footer>
+
+	</body>
+</html>
+
+<style>
+  /* Cascade **************************************************************************************/
+
+  @import url(/css/reset.css);
+
+  :root {
+    font-size: 16px;
+    color-scheme: light dark;
+  }
+
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+    font-size: 1.125rem;
+  }
+
+  @supports (font-variation-settings: normal) {
+    body { font-family: InterVariable, system-ui, sans-serif; }
+  }
+
+  /* Composition **********************************************************************************/
+
+  .row {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 1rem;
+  }
+  
+  /* Utility **************************************************************************************/
+
+  .owned p { text-decoration: line-through; } /* Make a line through the stuff I own */
+  
+  .toc-link:has(+ .toc-link)::after { content: ', '; } /* Separate the table of contents links with commas */
+
+  /* *** Tokens *******************/
+
+  .align-baseline {
+    align-items: baseline;
+  }
+  
+  /* Block ****************************************************************************************/
+  /* Exception ************************************************************************************/
+</style>
