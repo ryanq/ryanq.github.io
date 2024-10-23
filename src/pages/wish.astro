@@ -25,8 +25,8 @@ const wish_list = await getCollection('wish_list')
       <p>
         A collection of things around the internet (and off the internet) that I'd love to own. These are things I'd buy myself. Browse the whole list or jump to one of these categories:
         {categories.map(({ data: category }) => {
-          const label = category["Contents Name"] || category["Name"]
-          const anchor = category["Anchor"] || label
+          const label = category.contents_name || category.name
+          const anchor = category.anchor || category.contents_name || category.name
 
           return <span class="toc-link"><a href={`#${anchor?.toLowerCase()}`}>{label?.toLowerCase()}</a></span>
         })}.
@@ -36,25 +36,25 @@ const wish_list = await getCollection('wish_list')
 
     <main>
 
-      {categories.map(({ id: category_id, data: category }) => {
-        const header = category["Name"]
-        const anchor = category["Anchor"] || category["Contents Name"] || category["Name"]
-        const items = wish_list.filter(({ data: item }) => item["Category"] && item["Category"][0] === category_id && !item["Parent"])
+      {categories.map(({ id, data: category }) => {
+        const header = category.name
+        const anchor = category.anchor || category.contents_name || category.name
+        const items = wish_list.filter(({ data: item }) => item.category?.[0] === id && !item.parent)
         
         return (
           <h2 id={anchor?.toLowerCase()}>{header}</h2>
           
           <ul role="list">
-            {items.map(async ({ id: parent_id, data: item }) => {
-              if (item["Has Children?"] ?? false) {
+            {items.map(async ({ id, data: item }) => {
+              if (item.has_children ?? false) {
                 
                 /*
                  * Nested items: like a type of puzzle with different versions...
                  */
 
-                const price = item["Price"] ? `$${item["Price"]}` : undefined
-                const text = await marked.parseInline(item["Text"] ?? '')
-                const children = wish_list.filter(({ data: item }) => item["Parent"] && item["Parent"][0] === parent_id)
+                const price = item.price ? `$${item.price}` : undefined
+                const text = await marked.parseInline(item.text ?? '')
+                const children = wish_list.filter(({ data: item }) => item.parent?.[0] === id)
 
                 return (
                   <li class="row align-baseline">
@@ -64,9 +64,9 @@ const wish_list = await getCollection('wish_list')
 
                       <ul role="list">
                         {children.map(async ({ data: item }) => {
-                          const owned = item["Own?"] ?? false
-                          const price = item["Price"] ? `$${item["Price"]}` : undefined
-                          const text = await marked.parseInline(item["Text"] ?? '')
+                          const owned = item.is_owned ?? false
+                          const price = item.price ? `$${item.price}` : undefined
+                          const text = await marked.parseInline(item.text ?? '')
                           
                           return (
                             <li class:list={["row", "align-baseline", { owned }]}>
@@ -86,10 +86,10 @@ const wish_list = await getCollection('wish_list')
                  * Single items
                  */
 
-                const owned = item["Own?"] ?? false
-                const price = item["Price"] ? `$${item["Price"]}` : '?'
-                const text = await marked.parseInline(item["Text"] ?? '')
-                const note = item["Acquisition Note"] ?? ''
+                const owned = item.is_owned ?? false
+                const price = item.price ? `$${item.price}` : '?'
+                const text = await marked.parseInline(item.text ?? '')
+                const note = item.acquisition_note ?? ''
 
                 return (
                   <li class:list={["row", "align-baseline", { owned }]}>
