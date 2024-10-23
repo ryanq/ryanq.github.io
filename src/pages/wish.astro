@@ -44,12 +44,14 @@ function by_name(a: string, b: string): number {
 
       <p>
         A collection of things around the internet (and off the internet) that I'd love to own. These are things I'd buy myself. Browse the whole list or jump to one of these categories:
-        {categories.map(({ data: category }) => {
-          const label = category.contents_name || category.name
-          const anchor = category.anchor || category.contents_name || category.name
+        {categories
+          .sort(({ data: a }, { data: b }) => by_order(a.order, b.order) ?? by_name(a.name!, b.name!))
+          .map(({ data: category }) => {
+            const label = category.contents_name || category.name
+            const anchor = category.anchor || category.contents_name || category.name
 
-          return <span class="toc-link"><a href={`#${anchor?.toLowerCase()}`}>{label?.toLowerCase()}</a></span>
-        })}.
+            return <span class="toc-link"><a href={`#${anchor?.toLowerCase()}`}>{label?.toLowerCase()}</a></span>
+          })}.
       </p>
 
     </header>
