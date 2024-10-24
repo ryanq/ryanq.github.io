@@ -156,7 +156,10 @@ function by_name(a: string, b: string): number {
     font-size: 16px;
     color-scheme: light dark;
 
-    --strikethrough: line-through 2px hsl(0deg 0% 0% / 0.5);
+    --strikethrough-line: line-through;
+    --strikethrough-thickness: 2px;
+    --strikethrough-color: hsl(0deg 0% 0% / 0.5);
+    --strikethrough: var(--strikethrough-line) var(--strikethrough-thickness) var(--strikethrough-color);
   }
 
 
@@ -195,6 +198,9 @@ function by_name(a: string, b: string): number {
       > p,
       details summary {
         text-decoration: var(--strikethrough);
+        -webkit-text-decoration-line: var(--strikethrough-line);
+        -webkit-text-decoration-thickness: var(--strikethrough-thickness);
+        -webkit-text-decoration-color: var(--strikethrough-color);
       }
     }
 
@@ -203,6 +209,9 @@ function by_name(a: string, b: string): number {
 
   .child.owned {
     text-decoration: var(--strikethrough);
+    -webkit-text-decoration-line: var(--strikethrough-line);
+    -webkit-text-decoration-thickness: var(--strikethrough-thickness);
+    -webkit-text-decoration-color: var(--strikethrough-color);
   }
   
   /* Exception ************************************************************************************/
