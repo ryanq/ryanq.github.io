@@ -2,8 +2,39 @@
 import { getCollection } from 'astro:content'
 import { marked } from 'marked'
 
-const categories = await getCollection('categories')
-const wish_list = await getCollection('wish_list')
+const categories = await 
+  getCollection('categories')
+  .then(categories => categories.sort(({ data: a }, { data: b }) => by_order(a.order, b.order) ??
+                                                                    by_name(a.name!, b.name!)))
+const wish_list = await
+  getCollection('wish_list')
+  .then(items => items.sort(({ data: a }, { data: b }) => by_category(a.category?.[0], b.category?.[0]) ??
+                                                          by_parent(a.parent?.[0], b.parent?.[0]) ??
+                                                          by_order(a.order, b.order) ??
+                                                          by_price(a.price, b.price) ??
+                                                          by_name(a.name!, b.name!)))
+
+function by_category(a: string | undefined, b: string | undefined): number | undefined {
+  if (a !== undefined && b !== undefined) {
+    if (a < b) { return -1 }
+    else if (a > b) { return 1 }
+    else { return undefined }
+  }
+  else if (a !== undefined && b === undefined) { return -1 }
+  else if (a === undefined && b !== undefined) { return 1 }
+  else { return undefined }
+}
+
+function by_parent(a: string | undefined, b: string | undefined): number | undefined {
+  if (a !== undefined && b !== undefined) {
+    if (a < b) { return -1 }
+    else if (a > b) { return 1 }
+    else { return undefined }
+  }
+  else if (a !== undefined && b === undefined) { return -1 }
+  else if (a === undefined && b !== undefined) { return 1 }
+  else { return undefined }
+}
 
 function by_order(a: number | undefined, b: number | undefined): number | undefined {
   if (a !== undefined && b !== undefined) { return a - b === 0 ? undefined : a - b }
@@ -44,14 +75,12 @@ function by_name(a: string, b: string): number {
 
       <p>
         A collection of things around the internet (and off the internet) that I'd love to own. These are things I'd buy myself. Browse the whole list or jump to one of these categories:
-        {categories
-          .sort(({ data: a }, { data: b }) => by_order(a.order, b.order) ?? by_name(a.name!, b.name!))
-          .map(({ data: category }) => {
-            const label = category.contents_name || category.name
-            const anchor = category.anchor || category.contents_name || category.name
+        {categories.map(({ data: category }) => {
+          const label = category.contents_name || category.name
+          const anchor = category.anchor || category.contents_name || category.name
 
-            return <span class="toc-link"><a href={`#${anchor?.toLowerCase()}`}>{label?.toLowerCase()}</a></span>
-          })}.
+          return <span class="toc-link"><a href={`#${anchor?.toLowerCase()}`}>{label?.toLowerCase()}</a></span>
+        })}.
       </p>
 
     </header>
@@ -60,9 +89,7 @@ function by_name(a: string, b: string): number {
 
       {categories.map(({ id, data: category }) => {
         const anchor = category.anchor || category.contents_name || category.name
-        let items = wish_list
-          .filter(({ data: item }) => item.category?.[0] === id && !item.parent)
-          .sort(({ data: a }, { data: b }) => by_order(a.order, b.order) ?? by_price(a.price, b.price) ?? by_name(a.name!, b.name!))
+        let items = wish_list.filter(({ data: item }) => item.category?.[0] === id && !item.parent)
 
         return <>
           <h2 id={anchor?.toLowerCase()}>{category.name}</h2>
