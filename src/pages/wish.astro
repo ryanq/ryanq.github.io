@@ -75,13 +75,18 @@ function by_name(a: string, b: string): number {
 
       <p>
         A collection of things around the internet (and off the internet) that I'd love to own. These are things I'd buy myself. Browse the whole list or jump to one of these categories:
-        {categories.map(({ data: category }) => {
-          const label = category.contents_name || category.name
-          const anchor = category.anchor || category.contents_name || category.name
-
-          return <span class="toc-link"><a href={`#${anchor?.toLowerCase()}`}>{label?.toLowerCase()}</a></span>
-        })}.
       </p>
+        
+      {categories && 
+      <ul class="toc">
+      {categories.map(({ data: category }) => {
+        const label = category.contents_name || category.name
+        const anchor = category.anchor || category.contents_name || category.name
+        
+        return <li><a href={`#${anchor?.toLowerCase()}`}>{label?.toLowerCase()}</a></li>
+      })}
+      </ul>
+      }
 
     </header>
 
@@ -103,18 +108,18 @@ function by_name(a: string, b: string): number {
                 .sort(({ data: a }, { data: b }) => by_order(a.order, b.order) ?? by_price(a.price, b.price) ?? by_name(a.name!, b.name!))
 
               return (
-                <li class:list={[ "row", "align-baseline"]}>
-                  {item.price && !category.is_inline && <p class:list={[{ owned: item.is_owned }]}>{`$${item.price}`}</p>}
+                <li class:list={[ "item", "row", "align-baseline", { owned: item.is_owned }]}>
+                  {item.price && !category.is_inline && <p>{`$${item.price}`}</p>}
                   {!item.has_children
-                    ? <p set:html={text} class:list={[{ owned: item.is_owned }]}></p>
+                    ? <p set:html={text}></p>
                     : <details>
-                        <summary set:html={text} class:list={[{ owned: item.is_owned }]}></summary>
+                        <summary set:html={text}></summary>
 
                         {children.length > 0 &&
                         <ul>
                           {children.map(async ({ data: item }) => {
                             const text = await marked.parseInline(item.text ?? '')
-                            return <li class:list={[ "row", "align-baseline", { owned: item.is_owned }]} set:html={text}></li>
+                            return <li class:list={[ "child", "row", "align-baseline", { owned: item.is_owned }]} set:html={text}></li>
                           })}
                         </ul>
                         }
@@ -150,6 +155,8 @@ function by_name(a: string, b: string): number {
   :root {
     font-size: 16px;
     color-scheme: light dark;
+
+    --strikethrough: line-through 2px hsl(0deg 0% 0% / 0.5);
   }
 
 
@@ -167,22 +174,36 @@ function by_name(a: string, b: string): number {
 
   .row {
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: row;
+    align-items: baseline;
     gap: 1rem;
   }
   
   /* Utility **************************************************************************************/
 
-  .owned { text-decoration: line-through; } /* Make a line through the stuff I own */
-  
-  .toc-link:has(+ .toc-link)::after { content: ', '; } /* Separate the table of contents links with commas */
+  /* Block ****************************************************************************************/
 
-  /* *** Tokens *******************/
+  .toc {
+    padding: 0;
+    
+    li { display: inline; }
+    li:has(+ li)::after { content: ', '; }
+  }
 
-  .align-baseline {
-    align-items: baseline;
+  .item {
+    &.owned {
+      > p,
+      details summary {
+        text-decoration: var(--strikethrough);
+      }
+    }
+
+    aside { font-size: 0.875rem; }
+  }
+
+  .child.owned {
+    text-decoration: var(--strikethrough);
   }
   
-  /* Block ****************************************************************************************/
   /* Exception ************************************************************************************/
 </style>
