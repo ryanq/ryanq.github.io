@@ -156,6 +156,11 @@ function by_name(a: string, b: string): number {
     font-size: 16px;
     color-scheme: light dark;
 
+    --c-neutral-100: hsl(0deg 0% 98%);
+    --c-neutral-900: hsl(75deg 3% 24%); /* #3e3e3b */
+    --c-blue: hsl(205deg 87% 88%); /* #ccddf7 */
+    --c-red: hsl(354deg 65% 59%); /* c0765f */
+
     --strikethrough-line: line-through;
     --strikethrough-thickness: 2px;
     --strikethrough-color: light-dark(hsl(0deg 0% 0% / 0.6), hsl(0deg 0% 100% / 0.7));
@@ -200,10 +205,17 @@ function by_name(a: string, b: string): number {
     font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
     font-size: var(--step-0);
+
+    background-color: light-dark(var(--c-neutral-100), var(--c-neutral-900));
+    color: light-dark(var(--c-neutral-900), var(--c-neutral-100));
   }
 
   @supports (font-variation-settings: normal) {
     body { font-family: InterVariable, system-ui, sans-serif; }
+  }
+
+  a, a:visited {
+    color: light-dark(var(--c-red), var(--c-blue));
   }
 
   h1 { font-size: var(--step-3); }
