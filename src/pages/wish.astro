@@ -10,6 +10,7 @@ const wish_list = await
   getCollection('wish_list')
   .then(items => items.sort(({ data: a }, { data: b }) => by_category(a.category?.[0], b.category?.[0]) ??
                                                           by_parent(a.parent?.[0], b.parent?.[0]) ??
+                                                          by_owned(a.is_owned ?? false, b.is_owned ?? false) ??
                                                           by_order(a.order, b.order) ??
                                                           by_price(a.price, b.price) ??
                                                           by_name(a.name!, b.name!)))
@@ -34,6 +35,12 @@ function by_parent(a: string | undefined, b: string | undefined): number | undef
   else if (a !== undefined && b === undefined) { return -1 }
   else if (a === undefined && b !== undefined) { return 1 }
   else { return undefined }
+}
+
+function by_owned(a: boolean, b: boolean): number | undefined {
+  if (a == b) { return undefined }
+  else if (a) { return 1 }
+  else {return -1 }
 }
 
 function by_order(a: number | undefined, b: number | undefined): number | undefined {
