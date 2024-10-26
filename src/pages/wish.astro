@@ -114,6 +114,10 @@ function by_name(a: string, b: string): number {
                 .filter(({ data: child }) => child.parent?.[0] === id)
                 .sort(({ data: a }, { data: b }) => by_order(a.order, b.order) ?? by_price(a.price, b.price) ?? by_name(a.name!, b.name!))
 
+              if (category.is_inline) {
+                return <li class:list={[ "item", "row", "align-baseline", { owned: item.is_owned }]} set:html={text}></li>
+              }
+
               return (
                 <li class:list={[ "item", "row", "align-baseline", { owned: item.is_owned }]}>
                   {item.price && !category.is_inline && <p>{`$${item.price}`}</p>}
@@ -255,10 +259,23 @@ function by_name(a: string, b: string): number {
     li:has(+ li)::after { content: ', '; }
   }
 
-  .category {
+  .category:not(.inline) {
     display: flex;
     flex-flow: column;
     gap: var(--space-2xs-xs);
+  }
+
+  .category.inline {
+    display: flex;
+    flex-flow: row wrap;
+    row-gap: 0.5ch;
+
+    li { display: inline; }
+    li:has(+ li)::after {
+      content: ',';
+      position: relative;
+      left: -0.4ch;
+    }
   }
 
   .item {
