@@ -1,47 +1,35 @@
-# Astro Starter Kit: Minimal
 
-```sh
-npm create astro@latest -- --template minimal
+# ryanq.github.io
+
+The source for my personal site, hosted at https://ryanq.github.io.
+
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ryanq/ryanq.github.io/deploy.yml)
+
+## Run Locally
+
+Here's how to run the dev server:
+
+```bash
+$ git clone https://github.com/ryanq/ryanq.github.io
+
+$ cd ryanq.github.io
+$ yarn
+$ yarn run dev
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+To build and preview the site, replace `yarn run dev` with `yarn run build && yarn run preview`
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Deployment
 
-## 🚀 Project Structure
+This project is deployed through GitHub Actions. When a commit is pushed on the `main` branch, an Action will build and deploy the site.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Environment Variables
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+To run this project, you will need to add the following environment variables to your .env file:
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+- `AIRTABLE_TOKEN`: a personal access token (PAT) for Airtable.
+- `BASE_WISH_LIST`: the identifier for an Airtable base containing the data for the `/wish` page.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Contributing
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Contributions are welcome! However, it's my personal site and the words are mine, so I can say no to any of them.
