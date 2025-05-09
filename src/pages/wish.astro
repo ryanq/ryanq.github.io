@@ -1,67 +1,22 @@
 ---
 import { getCollection } from 'astro:content'
-import { marked } from 'marked'
+import { order } from '../util/wish_list/sorting'
+import Contents from '../components/wish_list/Contents.astro'
+import Section from '../components/wish_list/Section.astro'
 
-const categories = await 
-  getCollection('categories')
-  .then(categories => categories.sort(({ data: a }, { data: b }) => by_order(a.order, b.order) ??
-                                                                    by_name(a.name!, b.name!)))
-const wish_list = await
-  getCollection('wish_list')
-  .then(items => items.sort(({ data: a }, { data: b }) => by_category(a.category?.[0], b.category?.[0]) ??
-                                                          by_parent(a.parent?.[0], b.parent?.[0]) ??
-                                                          by_owned(a.is_owned ?? false, b.is_owned ?? false) ??
-                                                          by_order(a.order, b.order) ??
-                                                          by_price(a.price, b.price) ??
-                                                          by_name(a.name!, b.name!)))
+const wish_list = await getCollection('wish_list')
+wish_list.sort(order)
 
-function by_category(a: string | undefined, b: string | undefined): number | undefined {
-  if (a !== undefined && b !== undefined) {
-    if (a < b) { return -1 }
-    else if (a > b) { return 1 }
-    else { return undefined }
-  }
-  else if (a !== undefined && b === undefined) { return -1 }
-  else if (a === undefined && b !== undefined) { return 1 }
-  else { return undefined }
-}
-
-function by_parent(a: string | undefined, b: string | undefined): number | undefined {
-  if (a !== undefined && b !== undefined) {
-    if (a < b) { return -1 }
-    else if (a > b) { return 1 }
-    else { return undefined }
-  }
-  else if (a !== undefined && b === undefined) { return -1 }
-  else if (a === undefined && b !== undefined) { return 1 }
-  else { return undefined }
-}
-
-function by_owned(a: boolean, b: boolean): number | undefined {
-  if (a == b) { return undefined }
-  else if (a) { return 1 }
-  else {return -1 }
-}
-
-function by_order(a: number | undefined, b: number | undefined): number | undefined {
-  if (a !== undefined && b !== undefined) { return a - b === 0 ? undefined : a - b }
-  else if (a !== undefined && b === undefined) { return -1 }
-  else if (a === undefined && b !== undefined) { return 1 }
-  else { return undefined }
-}
-
-function by_price(a: number | undefined, b: number | undefined): number | undefined {
-  if (a !== undefined && b !== undefined) { return a - b === 0 ? undefined : a - b }
-  else if (a !== undefined && b === undefined) { return -1 }
-  else if (a === undefined && b !== undefined) { return 1 }
-  else { return undefined }
-}
-
-function by_name(a: string, b: string): number {
-  if (a < b) { return -1 }
-  else if (a > b) { return 1 }
-  else { return 0 }
-}
+const categories = [
+  "Connections",
+  "Fun",
+  "Books",
+  "Art",
+  "Apparel",
+  "Home",
+  "Technology",
+  "Tools",
+]
 ---
 
 <html lang="en">
@@ -84,65 +39,19 @@ function by_name(a: string, b: string): number {
         A collection of things around the internet (and off the internet) that I'd love to own. These are things I'd buy myself. Browse the whole list or jump to one of these categories:
       </p>
         
-      {categories && 
-      <ul class="toc">
-      {categories.map(({ data: category }) => {
-        const label = category.contents_name || category.name
-        const anchor = category.anchor || category.contents_name || category.name
-        
-        return <li><a href={`#${anchor?.toLowerCase()}`}>{label?.toLowerCase()}</a></li>
-      })}
-      </ul>
-      }
+      <Contents {categories} />
 
     </header>
 
     <main>
 
-      {categories.map(({ id, data: category }) => {
-        const anchor = category.anchor || category.contents_name || category.name
-        let items = wish_list.filter(({ data: item }) => item.category?.[0] === id && !item.parent)
+      {categories.map(category => {
+        let items = wish_list.filter(({ data: item }) => {
+          return item.category !== undefined &&
+                 item.category === category
+        })
 
-        return <>
-          <h2 id={anchor?.toLowerCase()}>{category.name}</h2>
-
-          {items.length > 0 &&
-          <ul class:list={["category", { inline: category.is_inline }]}>
-            {items.map(async ({ id, data: item }) => {
-              const text = await marked.parseInline(item.text ?? '')
-              const children = wish_list
-                .filter(({ data: child }) => child.parent?.[0] === id)
-                .sort(({ data: a }, { data: b }) => by_order(a.order, b.order) ?? by_price(a.price, b.price) ?? by_name(a.name!, b.name!))
-
-              if (category.is_inline) {
-                return <li class:list={[ "item", "row", "align-baseline", { owned: item.is_owned }]} set:html={text}></li>
-              }
-
-              return (
-                <li class:list={[ "item", "row", "align-baseline", { owned: item.is_owned }]}>
-                  {item.price && !category.is_inline && <p>{`$${item.price}`}</p>}
-                  {!item.has_children
-                    ? <p set:html={text}></p>
-                    : <details>
-                        <summary set:html={text}></summary>
-
-                        {children.length > 0 &&
-                        <ul>
-                          {children.map(async ({ data: item }) => {
-                            const text = await marked.parseInline(item.text ?? '')
-                            return <li class:list={[ "child", "row", "align-baseline", { owned: item.is_owned }]} set:html={text}></li>
-                          })}
-                        </ul>
-                        }
-                      </details>
-                  }
-                  {item.is_owned && !category.is_inline && item.acquisition_note && <aside>{item.acquisition_note}</aside>}
-                </li>
-              )
-            })}
-          </ul>
-          }
-        </>
+        return <Section {category} {items} />
       })}
 
     </main>
@@ -159,143 +68,98 @@ function by_name(a: string, b: string): number {
 </html>
 
 <style is:global>
-  /* Cascade **************************************************************************************/
-
   @import url(/css/reset.css);
 
   :root {
-    font-size: 16px;
     color-scheme: light dark;
 
-    --c-neutral-100: hsl(0deg 0% 98%);
-    --c-neutral-900: hsl(75deg 3% 24%); /* #3e3e3b */
-    --c-blue: hsl(205deg 87% 88%); /* #ccddf7 */
-    --c-red: hsl(354deg 65% 59%); /* c0765f */
-
-    --strikethrough-line: line-through;
-    --strikethrough-thickness: 2px;
-    --strikethrough-color: light-dark(hsl(0deg 0% 0% / 0.6), hsl(0deg 0% 100% / 0.7));
-    --strikethrough: var(--strikethrough-line) var(--strikethrough-thickness) var(--strikethrough-color);
-  
-    /* @link https://utopia.fyi/type/calculator?c=320,16,1.2,1240,20,1.25,4,1,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
-    --step--1: clamp(0.8333rem, 0.7754rem + 0.2899vw, 1rem);
-    --step-0: clamp(1rem, 0.913rem + 0.4348vw, 1.25rem);
-    --step-1: clamp(1.2rem, 1.0739rem + 0.6304vw, 1.5625rem);
-    --step-2: clamp(1.44rem, 1.2615rem + 0.8924vw, 1.9531rem);
-    --step-3: clamp(1.728rem, 1.4799rem + 1.2407vw, 2.4414rem);
-
-    /* @link https://utopia.fyi/space/calculator?c=320,16,1.2,1240,20,1.25,4,0,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
-    --space-3xs: clamp(0.25rem, 0.2283rem + 0.1087vw, 0.3125rem);
-    --space-2xs: clamp(0.5rem, 0.4565rem + 0.2174vw, 0.625rem);
-    --space-xs: clamp(0.75rem, 0.6848rem + 0.3261vw, 0.9375rem);
-    --space-s: clamp(1rem, 0.913rem + 0.4348vw, 1.25rem);
-    --space-m: clamp(1.5rem, 1.3696rem + 0.6522vw, 1.875rem);
-    --space-l: clamp(2rem, 1.8261rem + 0.8696vw, 2.5rem);
-    --space-xl: clamp(3rem, 2.7391rem + 1.3043vw, 3.75rem);
-    --space-2xl: clamp(4rem, 3.6522rem + 1.7391vw, 5rem);
-    --space-3xl: clamp(6rem, 5.4783rem + 2.6087vw, 7.5rem);
-
-    /* One-up pairs */
-    --space-3xs-2xs: clamp(0.25rem, 0.1196rem + 0.6522vw, 0.625rem);
-    --space-2xs-xs: clamp(0.5rem, 0.3478rem + 0.7609vw, 0.9375rem);
-    --space-xs-s: clamp(0.75rem, 0.5761rem + 0.8696vw, 1.25rem);
-    --space-s-m: clamp(1rem, 0.6957rem + 1.5217vw, 1.875rem);
-    --space-m-l: clamp(1.5rem, 1.1522rem + 1.7391vw, 2.5rem);
-    --space-l-xl: clamp(2rem, 1.3913rem + 3.0435vw, 3.75rem);
-    --space-xl-2xl: clamp(3rem, 2.3043rem + 3.4783vw, 5rem);
-    --space-2xl-3xl: clamp(4rem, 2.7826rem + 6.087vw, 7.5rem);
-
-    /* Custom pairs */
-    --space-s-l: clamp(1rem, 0.4783rem + 2.6087vw, 2.5rem);
+    --c-background: light-dark(hsl(0deg 0% 98%), hsl(201, 25%, 23%));
+    --c-foreground: light-dark(hsl(75deg 3% 24%), hsl(0deg 0% 98%));
+    --c-link: light-dark(hsl(354deg 65% 59%), hsl(205deg 87% 88%));
   }
 
+  /* @link https://utopia.fyi/type/calculator?c=320,18,1.2,1240,20,1.25,3,1,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+  :root {
+    --fs--1: clamp(0.9375rem, 0.9158rem + 0.1087vw, 1rem);
+    --fs-0: clamp(1.125rem, 1.0815rem + 0.2174vw, 1.25rem);
+    --fs-1: clamp(1.35rem, 1.2761rem + 0.3696vw, 1.5625rem);
+    --fs-2: clamp(1.62rem, 1.5041rem + 0.5793vw, 1.9531rem);
+    --fs-3: clamp(1.944rem, 1.771rem + 0.8651vw, 2.4414rem);
+  }
+
+  /* @link https://utopia.fyi/space/calculator?c=320,18,1.2,1240,20,1.25,3,1,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+  :root {
+    --space-3xs: clamp(0.3125rem, 0.3125rem + 0vw, 0.3125rem);
+    --space-2xs: clamp(0.5625rem, 0.5408rem + 0.1087vw, 0.625rem);
+    --space-xs: clamp(0.875rem, 0.8533rem + 0.1087vw, 0.9375rem);
+    --space-s: clamp(1.125rem, 1.0815rem + 0.2174vw, 1.25rem);
+    --space-m: clamp(1.6875rem, 1.6223rem + 0.3261vw, 1.875rem);
+    --space-l: clamp(2.25rem, 2.163rem + 0.4348vw, 2.5rem);
+    --space-xl: clamp(3.375rem, 3.2446rem + 0.6522vw, 3.75rem);
+    --space-2xl: clamp(4.5rem, 4.3261rem + 0.8696vw, 5rem);
+    --space-3xl: clamp(6.75rem, 6.4891rem + 1.3043vw, 7.5rem);
+
+    /* One-up pairs */
+    --space-3xs-2xs: clamp(0.3125rem, 0.2038rem + 0.5435vw, 0.625rem);
+    --space-2xs-xs: clamp(0.5625rem, 0.4321rem + 0.6522vw, 0.9375rem);
+    --space-xs-s: clamp(0.875rem, 0.7446rem + 0.6522vw, 1.25rem);
+    --space-s-m: clamp(1.125rem, 0.8641rem + 1.3043vw, 1.875rem);
+    --space-m-l: clamp(1.6875rem, 1.4049rem + 1.413vw, 2.5rem);
+    --space-l-xl: clamp(2.25rem, 1.7283rem + 2.6087vw, 3.75rem);
+    --space-xl-2xl: clamp(3.375rem, 2.8098rem + 2.8261vw, 5rem);
+    --space-2xl-3xl: clamp(4.5rem, 3.4565rem + 5.2174vw, 7.5rem);
+
+    /* Custom pairs */
+    --space-s-l: clamp(1.125rem, 0.6467rem + 2.3913vw, 2.5rem);
+  }
+
+  h1 { font-size: var(--fs-3); }
+  h2 { font-size: var(--fs-2); }
+  aside { font-size: var(--fs--1); }
+
+  a {
+    color: var(--c-link);
+    text-underline-offset: 0.2ex;
+
+    &:has(:focus-visible, :active) {
+      color: var(--c-foreground);
+    }
+  }
+</style>
+
+<style>
   body {
-    padding-block: var(--space-l-xl) var(--space-xs);
-    padding-inline: var(--space-s-l);
+    padding-block: var(--space-l-xl) var(--space-m);
+    padding-inline: var(--space-xl-2xl);
+    max-width: 70ch;
+
+    display: flex;
+    flex-flow: column nowrap;
+    gap: var(--space-2xl);
+
+    background-color: var(--c-background);
+    color: var(--c-foreground);
     
     font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
-    font-size: var(--step-0);
-
-    background-color: light-dark(var(--c-neutral-100), var(--c-neutral-900));
-    color: light-dark(var(--c-neutral-900), var(--c-neutral-100));
+    font-size: var(--fs-0);
   }
 
   @supports (font-variation-settings: normal) {
     body { font-family: InterVariable, system-ui, sans-serif; }
   }
 
-  a, a:visited {
-    color: light-dark(var(--c-red), var(--c-blue));
+  header {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: var(--space-s)
   }
 
-  h1 { font-size: var(--step-3); }
-  h2 { font-size: var(--step-2); }
-  ul { padding-inline-start: var(--space-s); }
-  aside { font-size: var(--step--1); }
-
+  header p {
+    font-size: var(--fs-1);
+  }
+  
   footer {
-    padding-block-start: var(--space-xl);
-    font-size: var(--step--1);
+    font-size: var(--fs--1);
   }
-
-  /* Composition **********************************************************************************/
-
-  .row {
-    display: flex;
-    flex-flow: row;
-    align-items: baseline;
-    gap: var(--space-s);
-  }
-  
-  /* Utility **************************************************************************************/
-
-  /* Block ****************************************************************************************/
-
-  .toc {
-    padding: 0;
-    
-    li { display: inline; }
-    li:has(+ li)::after { content: ', '; }
-  }
-
-  .category:not(.inline) {
-    display: flex;
-    flex-flow: column;
-    gap: var(--space-2xs-xs);
-  }
-
-  .category.inline {
-    display: flex;
-    flex-flow: row wrap;
-    row-gap: 0.5ch;
-
-    li { display: inline; }
-    li:has(+ li)::after {
-      content: ',';
-      position: relative;
-      left: -0.4ch;
-    }
-  }
-
-  .item {
-    &.owned {
-      > p,
-      details summary {
-        text-decoration: var(--strikethrough);
-        -webkit-text-decoration-line: var(--strikethrough-line);
-        -webkit-text-decoration-thickness: var(--strikethrough-thickness);
-        -webkit-text-decoration-color: var(--strikethrough-color);
-      }
-    }
-  }
-
-  .child.owned {
-    text-decoration: var(--strikethrough);
-    -webkit-text-decoration-line: var(--strikethrough-line);
-    -webkit-text-decoration-thickness: var(--strikethrough-thickness);
-    -webkit-text-decoration-color: var(--strikethrough-color);
-  }
-  
-  /* Exception ************************************************************************************/
 </style>

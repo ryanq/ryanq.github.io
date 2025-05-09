@@ -1,0 +1,26 @@
+---
+export interface Props {
+  categories: string[],
+}
+
+const { categories } = Astro.props
+const entries = categories.map(name => name.toLowerCase())
+---
+
+<ul>
+  {entries.map(label => <li><a href={`#${label}`}>{label}</a></li>)}
+</ul>
+
+<style>
+  ul {
+    display: flex;
+    flex-flow: row wrap;
+    column-gap: 0.3em;
+
+    list-style: none;
+  }
+
+  li:not(:last-child)::after {
+    content: ', ';
+  }
+</style>
