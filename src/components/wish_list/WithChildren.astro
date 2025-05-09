@@ -32,6 +32,7 @@ const text = await marked.parseInline(item.data.text ?? '')
 
     &::before {
       content: '→';
+      align-self: flex-start;
       transition: transform 0.15s ease-in-out;
     }
   }
