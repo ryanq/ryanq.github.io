@@ -27,11 +27,11 @@ const anchor = category.toLowerCase()
 
 <style>
   h2 {
-    margin-block: var(--space-l) var(--space-xs);
+    margin-block: var(--space-m) var(--space-xs);
   }
 
   ul {
-    padding-inline-start: var(--space-m);
+    padding-inline-start: var(--space-m-3xs);
   }
 
   ul:not(.inline_category) {
@@ -49,7 +49,7 @@ const anchor = category.toLowerCase()
 
     & > li {
       display: flex;
-      flex-flow: row, nowrap;
+      flex-flow: row nowrap;
       align-items: baseline;
       
       &:not(:last-child)::after {
