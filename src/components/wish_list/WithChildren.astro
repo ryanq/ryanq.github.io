@@ -13,7 +13,9 @@ const text = await marked.parseInline(item.data.text ?? '')
 ---
 
 <details>
-  <summary set:html={text} class:list={[{ owned: item.data.is_owned }]}></summary>
+  <summary class:list={[{ owned: item.data.is_owned }]}>
+    <p set:html={text}></p>
+  </summary>
 
   <ul>
     {children.map(child => <ChildEntry {child} />)}
@@ -21,6 +23,23 @@ const text = await marked.parseInline(item.data.text ?? '')
 </details>
 
 <style>
+  summary {
+    display: flex;
+    flex-flow: row nowrap;
+    column-gap: var(--space-3xs);
+
+    cursor: pointer;
+
+    &::before {
+      content: '→';
+      transition: transform 0.15s ease-in-out;
+    }
+  }
+
+  details[open] summary::before {
+    transform: rotate(0.25turn);
+  }
+  
   summary.owned {
     text-decoration: line-through;
   }
