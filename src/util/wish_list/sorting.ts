@@ -5,14 +5,6 @@ export const order = (a: CollectionEntry<'wish_list'>, b: CollectionEntry<'wish_
   //  0 => a = b
   // +1 => a > b
 
-  if (a.data.order !== undefined && b.data.order !== undefined) {
-    return a.data.order - b.data.order
-  } else if (a.data.order !== undefined) {
-    return -1
-  } else if (b.data.order !== undefined) {
-    return +1
-  }
-
   if (a.data.price !== undefined && b.data.price !== undefined) {
     return a.data.price - b.data.price
   } else if (a.data.price !== undefined) {

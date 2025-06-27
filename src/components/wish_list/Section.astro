@@ -16,12 +16,7 @@ const anchor = category.toLowerCase()
 
 <ul class:list={[{inline_category: inline_categories.has(category)}]}>
   {items
-    .filter(item => item.data.parent === undefined)
-    .map(item => {
-      let children = items.filter(child => child.data.parent !== undefined && child.data.parent[0] === item.id)
-
-      return <li><Entry {item} {children} /></li>
-    })
+    .map(item => <li><Entry {item} /></li>)
   }
 </ul>
 

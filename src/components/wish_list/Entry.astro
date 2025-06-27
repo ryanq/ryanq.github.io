@@ -1,23 +1,18 @@
 ---
 import type { CollectionEntry } from 'astro:content'
 import { marked } from 'marked'
-import WithChildren from './WithChildren.astro'
 
 export interface Props {
   item: CollectionEntry<'wish_list'>,
-  children: CollectionEntry<'wish_list'>[],
 }
 
-const { item, children } = Astro.props
+const { item } = Astro.props
 const text = await marked.parseInline(item.data.text ?? '')
 ---
 
 <div class:list={[{ owned: item.data.is_owned }]}>
   {item.data.price && <p>${item.data.price}</p>}
-  {children.length === 0
-    ? <p set:html={text}></p>
-    : <WithChildren {item} {children} />
-  }
+  <p set:html={text}></p>
   {item.data.acquisition_note && <aside>{item.data.acquisition_note}</aside>}
 </div>
 
