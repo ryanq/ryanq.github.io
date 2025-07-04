@@ -1,0 +1,1 @@
+export const inline_categories: Set<string> = new Set(["Art", "Connections"])

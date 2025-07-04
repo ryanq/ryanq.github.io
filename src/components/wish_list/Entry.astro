@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { marked } from 'marked'
+
+export interface Props {
+  item: CollectionEntry<'wish_list'>,
+}
+
+const { item } = Astro.props
+const text = await marked.parseInline(item.data.text ?? '')
+---
+
+<div class:list={[{ owned: item.data.is_owned }]}>
+  {item.data.price && <p>${item.data.price}</p>}
+  <p set:html={text}></p>
+  {item.data.acquisition_note && <aside>{item.data.acquisition_note}</aside>}
+</div>
+
+<style>
+  div {
+    display: flex;
+    flex-flow: row nowrap;
+    column-gap: var(--space-xs);
+    align-items: baseline;
+  }
+
+  div.owned p {
+    text-decoration: line-through;
+  }
+</style>

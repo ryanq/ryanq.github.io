@@ -1,0 +1,55 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { inline_categories } from '../../util/wish_list/inline_categories'
+import Entry from './Entry.astro'
+
+export interface Props {
+  category: string,
+  items: CollectionEntry<'wish_list'>[],
+}
+
+const { category, items } = Astro.props
+const anchor = category.toLowerCase()
+---
+
+<h2 id={anchor}>{category}</h2>
+
+<ul class:list={[{inline_category: inline_categories.has(category)}]}>
+  {items
+    .map(item => <li><Entry {item} /></li>)
+  }
+</ul>
+
+<style>
+  h2 {
+    margin-block: var(--space-m) var(--space-xs);
+  }
+
+  ul {
+    padding-inline-start: var(--space-m-3xs);
+  }
+
+  ul:not(.inline_category) {
+    display: flex;
+    flex-flow: column nowrap;
+    row-gap: var(--space-2xs);
+  }
+  
+  ul.inline_category {
+    display: flex;
+    flex-flow: row wrap;
+    column-gap: 0.3em;
+
+    list-style: none;
+
+    & > li {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: baseline;
+      
+      &:not(:last-child)::after {
+        content: ', ';
+      }
+    }
+  }
+</style>
