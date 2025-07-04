@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content'
 import { order } from '../util/wish_list/sorting'
 import Contents from '../components/wish_list/Contents.astro'
 import Section from '../components/wish_list/Section.astro'
+import Base from '../layouts/Base.astro'
 
 const wish_list = await getCollection('wish_list')
 wish_list.sort(order)
@@ -19,135 +20,50 @@ const categories = [
 ]
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>/wish</title>
-    <link rel="preconnect" href="https://rsms.me/">
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-	</head>
+<Base>
+  
+  <header>
 
-	<body>
+    <h1>/wish</h1>
 
-		<header>
+    <p>
+      A collection of things around the internet (and off the internet) that I'd love to own. These are things I'd buy myself. Browse the whole list or jump to one of these categories:
+    </p>
+      
+    <Contents {categories} />
 
-      <h1>/wish</h1>
+  </header>
 
-      <p>
-        A collection of things around the internet (and off the internet) that I'd love to own. These are things I'd buy myself. Browse the whole list or jump to one of these categories:
-      </p>
-        
-      <Contents {categories} />
+  <main>
 
-    </header>
+    {categories.map(category => {
+      let items = wish_list.filter(({ data: item }) => {
+        return item.category !== undefined &&
+                item.category === category
+      })
 
-    <main>
+      return <Section {category} {items} />
+    })}
 
-      {categories.map(category => {
-        let items = wish_list.filter(({ data: item }) => {
-          return item.category !== undefined &&
-                 item.category === category
-        })
+  </main>
 
-        return <Section {category} {items} />
-      })}
+  <footer>
 
-    </main>
+    <p>
+      Inspired by <a href="https://taylor.town/wish-manifesto">&ldquo;Make a /wish page&rdquo; at taylor.town</a>, where Taylor talks about all the reasons he made one and how to go about it.
+    </p>
 
-    <footer>
+  </footer>
 
-      <p>
-        Inspired by <a href="https://taylor.town/wish-manifesto">&ldquo;Make a /wish page&rdquo; at taylor.town</a>, where Taylor talks about all the reasons he made one and how to go about it.
-      </p>
-
-    </footer>
-
-	</body>
-</html>
-
-<style is:global>
-  @import url(/css/reset.css);
-
-  :root {
-    color-scheme: light dark;
-
-    --c-background: light-dark(hsl(0deg 0% 98%), hsl(201, 25%, 23%));
-    --c-foreground: light-dark(hsl(75deg 3% 24%), hsl(0deg 0% 98%));
-    --c-link: light-dark(hsl(354deg 65% 59%), hsl(205deg 87% 88%));
-  }
-
-  /* @link https://utopia.fyi/type/calculator?c=320,16,1.2,1240,20,1.25,3,1,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l|m-3xs&g=s,l,xl,12 */
-  :root {
-    --fs--1: clamp(0.8333rem, 0.7754rem + 0.2899vw, 1rem);
-    --fs-0: clamp(1rem, 0.913rem + 0.4348vw, 1.25rem);
-    --fs-1: clamp(1.2rem, 1.0739rem + 0.6304vw, 1.5625rem);
-    --fs-2: clamp(1.44rem, 1.2615rem + 0.8924vw, 1.9531rem);
-    --fs-3: clamp(1.728rem, 1.4799rem + 1.2407vw, 2.4414rem);
-  }
-
-  /* @link https://utopia.fyi/space/calculator?c=320,18,1.2,1240,20,1.25,3,1,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l|m-3xs&g=s,l,xl,12 */
-  :root {
-    --space-3xs: clamp(0.3125rem, 0.3125rem + 0vw, 0.3125rem);
-    --space-2xs: clamp(0.5625rem, 0.5408rem + 0.1087vw, 0.625rem);
-    --space-xs: clamp(0.875rem, 0.8533rem + 0.1087vw, 0.9375rem);
-    --space-s: clamp(1.125rem, 1.0815rem + 0.2174vw, 1.25rem);
-    --space-m: clamp(1.6875rem, 1.6223rem + 0.3261vw, 1.875rem);
-    --space-l: clamp(2.25rem, 2.163rem + 0.4348vw, 2.5rem);
-    --space-xl: clamp(3.375rem, 3.2446rem + 0.6522vw, 3.75rem);
-    --space-2xl: clamp(4.5rem, 4.3261rem + 0.8696vw, 5rem);
-    --space-3xl: clamp(6.75rem, 6.4891rem + 1.3043vw, 7.5rem);
-
-    /* One-up pairs */
-    --space-3xs-2xs: clamp(0.3125rem, 0.2038rem + 0.5435vw, 0.625rem);
-    --space-2xs-xs: clamp(0.5625rem, 0.4321rem + 0.6522vw, 0.9375rem);
-    --space-xs-s: clamp(0.875rem, 0.7446rem + 0.6522vw, 1.25rem);
-    --space-s-m: clamp(1.125rem, 0.8641rem + 1.3043vw, 1.875rem);
-    --space-m-l: clamp(1.6875rem, 1.4049rem + 1.413vw, 2.5rem);
-    --space-l-xl: clamp(2.25rem, 1.7283rem + 2.6087vw, 3.75rem);
-    --space-xl-2xl: clamp(3.375rem, 2.8098rem + 2.8261vw, 5rem);
-    --space-2xl-3xl: clamp(4.5rem, 3.4565rem + 5.2174vw, 7.5rem);
-
-    /* Custom pairs */
-    --space-s-l: clamp(1.125rem, 0.6467rem + 2.3913vw, 2.5rem);
-    --space-m-3xs: clamp(0.3125rem, 2.1658rem + -2.3913vw, 1.6875rem);
-  }
-
-  h1 { font-size: var(--fs-3); }
-  h2 { font-size: var(--fs-2); }
-  aside { font-size: var(--fs--1); }
-
-  a {
-    color: var(--c-link);
-    text-underline-offset: 0.2ex;
-
-    &:has(:focus-visible, :active) {
-      color: var(--c-foreground);
-    }
-  }
-</style>
+</Base>
 
 <style>
   body {
-    padding-block: var(--space-l-xl) var(--space-m);
-    padding-inline: var(--space-xl-2xl);
     max-width: 70ch;
 
     display: flex;
     flex-flow: column nowrap;
     gap: var(--space-l);
-
-    background-color: var(--c-background);
-    color: var(--c-foreground);
-    
-    font-family: 'Inter', system-ui, sans-serif;
-    font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
-    font-size: var(--fs-0);
-  }
-
-  @supports (font-variation-settings: normal) {
-    body { font-family: InterVariable, system-ui, sans-serif; }
   }
 
   header {
