@@ -1,0 +1,54 @@
+---
+import Base from '@layouts/Base.astro'
+---
+
+<Base>
+  <div class="wrapper">
+    <header>
+      <a href="/" class="home-link">Ryan Q</a>
+
+      <nav>
+        <a href="/posts">Writing</a>
+        <a href="/projects">Projects</a>
+        <a href="/now">Now</a>
+      </nav>
+    </header>
+    
+    <slot />
+  </div>
+</Base>
+
+<style>
+  .wrapper {
+    max-width: 70ch;
+    margin-inline: auto;
+  }
+
+  header {
+    display: flex;
+    flex-flow: row wrap;
+    justify-items: space-between;
+    align-items: baseline;
+    
+    padding-inline: 1rem;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  .home-link {
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+    font-size: 3rem;
+
+    &:hover::after, &:focus-visible::after {
+      content: ' ←';
+    }
+  }
+
+  nav {
+    display: flex;
+    gap: 1rem;
+    margin-inline-start: auto;
+  }
+</style>
