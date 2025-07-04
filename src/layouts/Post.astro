@@ -1,0 +1,40 @@
+---
+import Base from '@layouts/Base.astro'
+
+const { frontmatter } = Astro.props;
+---
+
+<Base>
+  <title slot="head">{frontmatter.title}</title>
+
+  <main>
+    <h1>{frontmatter.title}</h1>
+    <slot />
+  </main>
+</Base>
+
+<style>
+  main {
+    max-width: 70ch;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  main :global(h1, h2, h3, h4) {
+    margin-block: 1rem;
+  }
+
+  main :global(p + p) {
+    margin-top: 1rem;
+  }
+
+  main :global(section[role="note"]) {
+    margin-block: 1rem;
+    padding-block: 1rem;
+    padding-inline: 2rem;
+    
+    background-color: var(--c-note);
+
+    margin-trim: block;
+  }
+</style>
