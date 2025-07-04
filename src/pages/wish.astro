@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content'
 import { order } from '../util/wish_list/sorting'
 import Contents from '../components/wish_list/Contents.astro'
 import Section from '../components/wish_list/Section.astro'
+import Base from '../layouts/Base.astro'
 
 const wish_list = await getCollection('wish_list')
 wish_list.sort(order)
@@ -19,53 +20,42 @@ const categories = [
 ]
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>/wish</title>
-    <link rel="preconnect" href="https://rsms.me/">
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-	</head>
+<Base>
+  
+  <header>
 
-	<body>
+    <h1>/wish</h1>
 
-		<header>
+    <p>
+      A collection of things around the internet (and off the internet) that I'd love to own. These are things I'd buy myself. Browse the whole list or jump to one of these categories:
+    </p>
+      
+    <Contents {categories} />
 
-      <h1>/wish</h1>
+  </header>
 
-      <p>
-        A collection of things around the internet (and off the internet) that I'd love to own. These are things I'd buy myself. Browse the whole list or jump to one of these categories:
-      </p>
-        
-      <Contents {categories} />
+  <main>
 
-    </header>
+    {categories.map(category => {
+      let items = wish_list.filter(({ data: item }) => {
+        return item.category !== undefined &&
+                item.category === category
+      })
 
-    <main>
+      return <Section {category} {items} />
+    })}
 
-      {categories.map(category => {
-        let items = wish_list.filter(({ data: item }) => {
-          return item.category !== undefined &&
-                 item.category === category
-        })
+  </main>
 
-        return <Section {category} {items} />
-      })}
+  <footer>
 
-    </main>
+    <p>
+      Inspired by <a href="https://taylor.town/wish-manifesto">&ldquo;Make a /wish page&rdquo; at taylor.town</a>, where Taylor talks about all the reasons he made one and how to go about it.
+    </p>
 
-    <footer>
+  </footer>
 
-      <p>
-        Inspired by <a href="https://taylor.town/wish-manifesto">&ldquo;Make a /wish page&rdquo; at taylor.town</a>, where Taylor talks about all the reasons he made one and how to go about it.
-      </p>
-
-    </footer>
-
-	</body>
-</html>
+</Base>
 
 <style is:global>
   @import url(/css/reset.css);
@@ -112,6 +102,11 @@ const categories = [
     /* Custom pairs */
     --space-s-l: clamp(1.125rem, 0.6467rem + 2.3913vw, 2.5rem);
     --space-m-3xs: clamp(0.3125rem, 2.1658rem + -2.3913vw, 1.6875rem);
+  }
+
+  h1, h2, h3 {
+    font-family: 'Bricolage Grotesque';
+    font-weight: 500;
   }
 
   h1 { font-size: var(--fs-3); }
