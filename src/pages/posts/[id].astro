@@ -1,0 +1,48 @@
+---
+import { getCollection, render } from 'astro:content'
+import { kebabCase } from 'change-case'
+import Page from '@layouts/Page.astro'
+
+export async function getStaticPaths() {
+    const posts = await getCollection('blog')
+    return posts.map(post => ({
+        params: { id: post.data.slug ?? kebabCase(post.data.title) },
+        props: { post },
+    }))
+}
+
+const df = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'America/New_York' })
+
+const { post } = Astro.props
+const { Content } = await render(post)
+---
+
+<Page>
+  <title slot="head">{post.data.title}</title>
+
+  <main>
+    <h1>{post.data.title}</h1>
+    <p>
+        Posted {df.format(post.data.publish_date)}
+        {post.data.update_date && <span>, updated {df.format(post.data.update_date)}</span> }
+    </p>
+
+    <Content />
+  </main>
+</Page>
+
+<style>
+  main {
+    max-width: 70ch;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  main :global(h1, h2, h3, h4) {
+    margin-block: 1rem;
+  }
+
+  main :global(p + p) {
+    margin-top: 1rem;
+  }
+</style>
